@@ -1,2 +1,2 @@
-# IMGD2900
+# DRMGames
 Class projects for Digital Game Design I
