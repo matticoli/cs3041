@@ -75,7 +75,7 @@ a {
 
 .box[data-button="game1"] {
     left: 10%;
-    background-image: url('../cover-default.png');
+    background-image: url('../RR1/cover-RR1.png');
 }
 
 .box[data-button="game2"] {
