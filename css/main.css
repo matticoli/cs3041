@@ -80,7 +80,7 @@ a {
 
 .box[data-button="game2"] {
     left: 40%;
-    background-image: url('../cover-default.png');
+    background-image: url('../MM1/cover.png');
 }
 
 .box[data-button="game3"] {
