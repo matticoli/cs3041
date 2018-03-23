@@ -57,7 +57,7 @@ PS.init = function( system, options ) {
 	
 	PS.gridColor( 0xbadadd ); // Perlenspiel gray
 
-	PS.statusColor( 0x000000 );
+	PS.statusColor( 0x000000 ); // Black
 	PS.statusText( "Touch any bead..." );
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
@@ -87,7 +87,7 @@ PS.touch = function( x, y, data, options ) {
 	if ( data === PS.COLOR_BLACK ) {
 		next = PS.COLOR_WHITE;
 	} else {
-		next = 0xffff00;
+		next = 0xffff00; // Yellow
 	}
 	PS.data( x, y, next ); // remember color
 
@@ -108,6 +108,9 @@ PS.touch = function( x, y, data, options ) {
 
 PS.release = function( x, y, data, options ) {
 	"use strict";
+
+	// Play pop sound
+
     PS.audioPlay( "fx_pop" );
 
 	// Uncomment the following line to inspect parameters
@@ -195,6 +198,9 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 
 PS.keyUp = function( key, shift, ctrl, options ) {
 	"use strict";
+
+	// Play bloop sound
+	
     PS.audioPlay( "fx_bloop" );
 
 	// Uncomment the following line to inspect parameters
