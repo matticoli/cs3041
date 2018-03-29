@@ -23,6 +23,28 @@ Called once after engine is initialized but before event-polling begins.
 
 // Uncomment the following BLOCK to expose PS.init() event handler:
 
+var State = {
+    INTRO: -1,
+    OFF: 0,
+    WANDER: 1,
+    CIRCLE: 2,
+    FOLLOW: 3,
+
+    posx: -10,
+    posy: -10,
+
+    current: -1,
+    runTime: 0,// millis
+    tasks: [],
+    taskCreate: (state, x, y, duration) => {
+        return {
+          state: state,
+          x: x,
+          y: y,
+          duration: duration,
+        };
+    },
+};
 
 
 PS.init = function( system, options ) {
@@ -40,6 +62,8 @@ PS.init = function( system, options ) {
 
 	PS.gridColor(PS.COLOR_BLACK);
 	PS.gridFade(120);
+
+	PS.timerStart(10, PS.loop);
     // PS.fadeGrid(PS.COLOR_BLACK);
 	// This is also a good place to display your game title or a welcome message
 	// in the status line above the grid.
@@ -50,15 +74,38 @@ PS.init = function( system, options ) {
 	// Add any other initialization code you need here.
 };
 
+function randPos() {
+    return {
+        x: Math.floor(Math.random()*33),
+        y: Math.floor(Math.random()*33),
+    }
+}
+
 /*
 *
 * TODO: Comment
 * */
 PS.loop = function() {
+    if(State.tasks[0]) {// If task queued
 
-    
+    } else {
+        switch(State.current) {
+            case State.INTRO:
+                
+                break;
+            case State.OFF:
+                // Firefly off screen, wait for event
+                break;
+            case State.WANDER:
+                if(!State.path && !State.path[0]) {
+                    State.path = PS.line(State.x, State.y, randPos().x, randPos().y);// Yea I know I'm calling it twice
+                }
 
-    setTimeout(PS.loop, 100);
+                // Firefly on screen but no queued task, wander
+
+        }
+        State.runTime = 0;
+    }
 }
 
 /*
