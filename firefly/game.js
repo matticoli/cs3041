@@ -24,13 +24,12 @@ Called once after engine is initialized but before event-polling begins.
 // Uncomment the following BLOCK to expose PS.init() event handler:
 
 var State = {
-    INTRO: -1,
     OFF: 0,
     WANDER: 1,
     CIRCLE: 2,
     FOLLOW: 3,
 
-    x: 16,
+    x: 31,
     y: 16,
 
     current: -1,
@@ -69,6 +68,11 @@ PS.init = function( system, options ) {
         PS.fade(i, j, 120);
     });
 
+	PS.audioPlay("crickets_0",
+        {loop: true, fileTypes: ["mp3"], path: "https://opengameart.org/sites/default/files/"});
+
+	
+
 
 	PS.timerStart(10, PS.loop);
     // PS.fadeGrid(PS.COLOR_BLACK);
@@ -97,9 +101,6 @@ PS.loop = function() {
 
     } else {
         switch(State.current) {
-            case State.INTRO:
-
-                break;
             case State.OFF:
                 if(!State.path || State.path.length === 0) {
                     State.path = PS.line(State.x || 0, State.y || 0, 31, randPos().y);
@@ -116,7 +117,7 @@ PS.loop = function() {
                 break;
             case State.WANDER:
                 // Firefly on screen but no queued task, wander
-                if(!State.path || !State.path[0]) {
+                if((!State.path || !State.path[0]) && Math.random() > 0.2) {
                     State.path = PS.line(State.x || 0, State.y || 0, randPos().x, randPos().y);// Yea I know I'm calling it twice
                 }
 
