@@ -46,6 +46,8 @@ var State = {
     },
 };
 
+var i=0; //looping variable
+var images = []; //array of images loaded on initalization
 
 PS.init = function( system, options ) {
 	// Uncomment the following code line to verify operation:
@@ -63,7 +65,6 @@ PS.init = function( system, options ) {
 	PS.gridColor(PS.COLOR_BLACK);
 	PS.gridFade(120);
 
-	PS.timerStart(10, PS.loop);
     // PS.fadeGrid(PS.COLOR_BLACK);
 	// This is also a good place to display your game title or a welcome message
 	// in the status line above the grid.
@@ -72,6 +73,37 @@ PS.init = function( system, options ) {
 	// PS.statusText( "Game" );
 
 	// Add any other initialization code you need here.
+    var myLoader;
+
+    //var title25, title50, title75, title100;
+    //var fireFly;
+
+    // Image loading function
+    // Called when image loads successfully
+    // [data] parameter will contain imageData
+
+    myLoader = function ( imageData ) {
+        var x, y, ptr, color;
+            images[i]= imageData;
+            i=i+1;
+            // Report imageData in debugger
+
+            PS.debug("Loaded " + imageData.source +
+                ":\nid = " + imageData.id +
+                "\nwidth = " + imageData.width +
+                "\nheight = " + imageData.height +
+                "\nformat = " + imageData.pixelSize + "\n");
+    };
+
+    // Load image in default format (4)
+
+    PS.imageLoad( "Firefly Title Screen 25.png", myLoader );
+    PS.imageLoad( "Firefly Title Screen 50.png", myLoader );
+    PS.imageLoad( "Firefly Title Screen 75.png", myLoader );
+    PS.imageLoad( "Firefly Title Screen 100.png", myLoader );
+    i=0;
+    PS.statusText( "PS.imageBlit() Demo 1" );
+    PS.timerStart(10, PS.loop);
 };
 
 function randPos() {
@@ -91,8 +123,15 @@ PS.loop = function() {
     } else {
         switch(State.current) {
             case State.INTRO:
-                
-                break;
+                if(i<4) {
+                    if (images[i]) {
+                        PS.imageBlit(images[i], 0, 0);
+                        i = i + 1;
+                        PS.debug("Displaying " + images[i].source)
+                    }
+                }
+
+                 break;
             case State.OFF:
                 // Firefly off screen, wait for event
                 break;
