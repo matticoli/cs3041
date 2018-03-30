@@ -24,6 +24,7 @@ Called once after engine is initialized but before event-polling begins.
 // Uncomment the following BLOCK to expose PS.init() event handler:
 
 var State = {
+    INTRO: -1,
     OFF: 0,
     WANDER: 1,
     CIRCLE: 2,
@@ -45,6 +46,7 @@ var State = {
     },
 };
 
+var images = []; //array of images loaded on initalization
 
 PS.init = function( system, options ) {
 	// Uncomment the following code line to verify operation:
@@ -83,6 +85,51 @@ PS.init = function( system, options ) {
 	// PS.statusText( "Game" );
 
 	// Add any other initialization code you need here.
+
+    //var title25, title50, title75, title100;
+    //var fireFly;
+
+    // Image loading function
+    // Called when image loads successfully
+    // [data] parameter will contain imageData
+
+    var myLoader = function ( imageData ) {
+            images.push(imageData);
+            // i=i+1;
+            // Report imageData in debugger
+
+            PS.debug("Loaded " + imageData.source +
+                ":\nid = " + imageData.id +
+                "\nwidth = " + imageData.width +
+                "\nheight = " + imageData.height +
+                "\nformat = " + imageData.pixelSize + "\n");
+    };
+
+    // Load image in default format (4)
+
+    PS.imageLoad( "Firefly Title Screen 25.png", myLoader );
+    PS.imageLoad( "Firefly Title Screen 50.png", myLoader );
+    PS.imageLoad( "Firefly Title Screen 75.png", myLoader );
+    PS.imageLoad( "Firefly Title Screen 100.png", myLoader );
+    var i=0;
+
+    var introTimer = PS.timerStart(120, () => {
+        if(i<4) {
+            if (images[i]) {
+                PS.imageBlit(images[i], 0, 0);
+                i = i + 1;
+            }
+        } else {
+            PS.applyRect(0, 0, 32, 32, (i, j) => {
+                PS.fade(i, j, 120);
+                PS.color(i, j, PS.COLOR_BLACK);
+            });
+            PS.timerStop(introTimer);
+            State.current = State.OFF;
+            PS.timerStart(10, PS.loop);
+        }
+    })
+
 };
 
 function randPos() {
@@ -101,6 +148,8 @@ PS.loop = function() {
 
     } else {
         switch(State.current) {
+            case State.INTRO:
+                 break;
             case State.OFF:
                 if(!State.path || State.path.length === 0) {
                     State.path = PS.line(State.x || 0, State.y || 0, 31, randPos().y);
@@ -213,6 +262,7 @@ It doesn't have to do anything.
 
 
 PS.enter = function( x, y, data, options ) {
+    if(State.current === State.INTRO) return;
     State.path = [];
     State.current = State.WANDER;
 
@@ -261,7 +311,8 @@ It doesn't have to do anything.
 
 
 PS.exitGrid = function( options ) {
-	// Uncomment the following code line to verify operation:
+    if(State.current === State.INTRO) return;
+    // Uncomment the following code line to verify operation:
     State.path = [];
     State.current = State.OFF;
 	// PS.debug( "PS.exitGrid() called\n" );
