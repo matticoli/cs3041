@@ -98,11 +98,11 @@ PS.init = function( system, options ) {
             // i=i+1;
             // Report imageData in debugger
 
-            PS.debug("Loaded " + imageData.source +
-                ":\nid = " + imageData.id +
-                "\nwidth = " + imageData.width +
-                "\nheight = " + imageData.height +
-                "\nformat = " + imageData.pixelSize + "\n");
+            // PS.debug("Loaded " + imageData.source +
+            //     ":\nid = " + imageData.id +
+            //     "\nwidth = " + imageData.width +
+            //     "\nheight = " + imageData.height +
+            //     "\nformat = " + imageData.pixelSize + "\n");
     };
 
     // Load image in default format (4)
@@ -124,8 +124,8 @@ PS.init = function( system, options ) {
                 PS.fade(i, j, 120);
                 PS.color(i, j, PS.COLOR_BLACK);
             });
-            PS.timerStop(introTimer);
             State.current = State.OFF;
+            PS.timerStop(introTimer);
             PS.timerStart(10, PS.loop);
         }
     })
