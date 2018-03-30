@@ -46,6 +46,8 @@ var State = {
     },
 };
 
+var flyColor = PS.COLOR_YELLOW;
+
 var images = []; //array of images loaded on initalization
 
 PS.init = function( system, options ) {
@@ -113,7 +115,7 @@ PS.init = function( system, options ) {
     PS.imageLoad( "Firefly Title Screen 100.png", myLoader );
     var i=0;
 
-    var introTimer = PS.timerStart(120, () => {
+    var introTimer = PS.timerStart(30, () => {
         if(i<4) {
             if (images[i]) {
                 PS.imageBlit(images[i], 0, 0);
@@ -151,6 +153,7 @@ PS.loop = function() {
             case State.INTRO:
                  break;
             case State.OFF:
+                flyColor = PS.COLOR_RED;
                 if(!State.path || State.path.length === 0) {
                     State.path = PS.line(State.x || 0, State.y || 0, 31, randPos().y);
                 }
@@ -165,11 +168,15 @@ PS.loop = function() {
                 }
                 break;
             case State.WANDER:
+                flyColor = PS.COLOR_YELLOW;
                 // Firefly on screen but no queued task, wander
-                if((!State.path || !State.path[0]) && Math.random() > 0.2) {
+                if((!State.path || !State.path[0]) && Math.random() < 0.2) {
                     State.path = PS.line(State.x || 0, State.y || 0, randPos().x, randPos().y);// Yea I know I'm calling it twice
                 }
 
+                break;
+            case State.FOLLOW:
+                flyColor = PS.COLOR_WHITE;
                 break;
 
         }
@@ -192,7 +199,7 @@ PS.loop = function() {
             PS.applyRect(State.x, State.y, 2, 2, (x, y) => {
                 PS.fade(x, y, 0);
             PS.color(x, y, PS.COLOR_BLACK);
-            PS.color(x, y, PS.COLOR_YELLOW);
+            PS.color(x, y, flyColor);
         });
         State.runTime = 0;
     }
@@ -235,17 +242,19 @@ It doesn't have to do anything
 
 // Uncomment the following BLOCK to expose PS.release() event handler:
 
-/*
+
 
 PS.release = function( x, y, data, options ) {
-	// Uncomment the following code line to inspect x/y parameters:
+    State.current = State.WANDER;
+
+    // Uncomment the following code line to inspect x/y parameters:
 
 	// PS.debug( "PS.release() @ " + x + ", " + y + "\n" );
 
 	// Add code here for when the mouse button/touch is released over a bead.
 };
 
-*/
+
 
 /*
 PS.enter ( x, y, button, data, options )
