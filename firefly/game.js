@@ -97,14 +97,6 @@ PS.init = function( system, options ) {
 
     var myLoader = function ( imageData ) {
             images.push(imageData);
-            // i=i+1;
-            // Report imageData in debugger
-
-            // PS.debug("Loaded " + imageData.source +
-            //     ":\nid = " + imageData.id +
-            //     "\nwidth = " + imageData.width +
-            //     "\nheight = " + imageData.height +
-            //     "\nformat = " + imageData.pixelSize + "\n");
     };
 
     // Load image in default format (4)
@@ -173,13 +165,16 @@ PS.loop = function() {
                 if((!State.path || !State.path[0]) && Math.random() < 0.2) {
                     State.path = PS.line(State.x || 0, State.y || 0, randPos().x, randPos().y);// Yea I know I'm calling it twice
                 }
-
                 break;
             case State.FOLLOW:
                 flyColor = PS.COLOR_WHITE;
+                PS.gridColor(0x003366);
+                PS.gridFade(120);
                 break;
 
         }
+
+
 
         // Draw:
         var pos = State.path && State.path.shift();
@@ -245,6 +240,11 @@ It doesn't have to do anything
 
 
 PS.release = function( x, y, data, options ) {
+    if(State.current==State.FOLLOW){
+        PS.gridColor(PS.COLOR_BLACK);
+        PS.gridFade(120);
+    }
+
     State.current = State.WANDER;
 
     // Uncomment the following code line to inspect x/y parameters:
@@ -271,6 +271,10 @@ It doesn't have to do anything.
 
 
 PS.enter = function( x, y, data, options ) {
+    if(State.current==State.FOLLOW){
+        PS.gridColor(PS.COLOR_BLACK);
+        PS.gridFade(120);
+    }
     if(State.current === State.INTRO) return;
     State.path = [];
     State.current = State.WANDER;
