@@ -23,6 +23,10 @@ Called once after engine is initialized but before event-polling begins.
 
 // Uncomment the following BLOCK to expose PS.init() event handler:
 
+var colorsNorm = [0x999900, 0xCCCC00, 0xFFFF00, 0xFFFF33, 0xFFFF00, 0xCCCC00, 0x999900];
+var colorsSad = [0x333300, 0x666600, 0x999900, 0xCCCC00, 0x999900, 0x666600, 0x333300];
+var colorIndex = 0;
+
 var State = {
     INTRO: -1,
     OFF: 0,
@@ -65,6 +69,8 @@ PS.init = function( system, options ) {
 
 	PS.gridColor(PS.COLOR_BLACK);
 	PS.gridFade(120);
+
+	PS.statusText("");
 
 	PS.applyRect(0, 0, 32, 32, (i, j) => {
         PS.color(i, j, PS.COLOR_BLACK);
@@ -145,6 +151,8 @@ PS.loop = function() {
             case State.INTRO:
                  break;
             case State.OFF:
+                // flyColor = colorsSad[colorIndex];
+                // colorIndex = (colorIndex + 1 > colorsSad.length ? 0 : colorIndex + 1);
                 flyColor = PS.COLOR_RED;
                 if(!State.path || State.path.length === 0) {
                     State.path = PS.line(State.x || 0, State.y || 0, 31, randPos().y);
@@ -160,14 +168,15 @@ PS.loop = function() {
                 }
                 break;
             case State.WANDER:
-                flyColor = PS.COLOR_YELLOW;
+                flyColor = colorsNorm[colorIndex];
+                colorIndex = (colorIndex + 1 > colorsNorm.length ? 0 : colorIndex + 1);
                 // Firefly on screen but no queued task, wander
                 if((!State.path || !State.path[0]) && Math.random() < 0.2) {
                     State.path = PS.line(State.x || 0, State.y || 0, randPos().x, randPos().y);// Yea I know I'm calling it twice
                 }
                 break;
             case State.FOLLOW:
-                flyColor = PS.COLOR_WHITE;
+                flyColor = 0xFFFF99;
                 PS.gridColor(0x003366);
                 PS.gridFade(120);
                 break;
