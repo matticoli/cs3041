@@ -30,8 +30,8 @@ var State = {
     CIRCLE: 2,
     FOLLOW: 3,
 
-    posx: -10,
-    posy: -10,
+    x: 16,
+    y: 16,
 
     current: -1,
     runTime: 0,// millis
@@ -63,6 +63,13 @@ PS.init = function( system, options ) {
 	PS.gridColor(PS.COLOR_BLACK);
 	PS.gridFade(120);
 
+	PS.applyRect(0, 0, 32, 32, (i, j) => {
+        PS.color(i, j, PS.COLOR_BLACK);
+        PS.border(i, j, PS.COLOR_BLACK);
+        PS.fade(i, j, 120);
+    });
+
+
 	PS.timerStart(10, PS.loop);
     // PS.fadeGrid(PS.COLOR_BLACK);
 	// This is also a good place to display your game title or a welcome message
@@ -76,8 +83,8 @@ PS.init = function( system, options ) {
 
 function randPos() {
     return {
-        x: Math.floor(Math.random()*33),
-        y: Math.floor(Math.random()*33),
+        x: Math.floor(Math.random()*31 + 1),
+        y: Math.floor(Math.random()*31 + 1),
     }
 }
 
@@ -91,19 +98,52 @@ PS.loop = function() {
     } else {
         switch(State.current) {
             case State.INTRO:
-                
+
                 break;
             case State.OFF:
-                // Firefly off screen, wait for event
-                break;
-            case State.WANDER:
-                if(!State.path && !State.path[0]) {
-                    State.path = PS.line(State.x, State.y, randPos().x, randPos().y);// Yea I know I'm calling it twice
+                if(!State.path || State.path.length === 0) {
+                    State.path = PS.line(State.x || 0, State.y || 0, 31, randPos().y);
                 }
 
+                if(State.x === 31) {
+                    PS.applyRect(State.x, State.y, 2, 2, (x, y) => {
+                        PS.fade(x, y, 0);
+                        PS.color(x, y, PS.COLOR_BLACK);
+                        return;
+                    });
+                    return;
+                }
+                break;
+            case State.WANDER:
                 // Firefly on screen but no queued task, wander
+                if(!State.path || !State.path[0]) {
+                    State.path = PS.line(State.x || 0, State.y || 0, randPos().x, randPos().y);// Yea I know I'm calling it twice
+                }
+
+                break;
 
         }
+
+        // Draw:
+        var pos = State.path && State.path.shift();
+        if(!pos) {
+            return;
+        }
+
+        PS.applyRect(State.x, State.y, 2, 2, (x, y) => {
+            PS.fade(x, y, 60, {rgb: PS.COLOR_ORANGE});
+            PS.color(x, y, PS.COLOR_BLACK);
+            return;
+        });
+
+            State.x = pos[0];
+            State.y = pos[1];
+
+            PS.applyRect(State.x, State.y, 2, 2, (x, y) => {
+                PS.fade(x, y, 0);
+            PS.color(x, y, PS.COLOR_BLACK);
+            PS.color(x, y, PS.COLOR_YELLOW);
+        });
         State.runTime = 0;
     }
 }
@@ -120,17 +160,18 @@ It doesn't have to do anything.
 
 // Uncomment the following BLOCK to expose PS.touch() event handler:
 
-/*
+
 
 PS.touch = function( x, y, data, options ) {
 	// Uncomment the following code line to inspect x/y parameters:
 
 	// PS.debug( "PS.touch() @ " + x + ", " + y + "\n" );
-
+    State.path = PS.line(State.x, State.y, x, y);
+    State.current = State.FOLLOW;
 	// Add code here for mouse clicks/touches over a bead.
 };
 
-*/
+
 
 /*
 PS.release ( x, y, data, options )
@@ -168,17 +209,20 @@ It doesn't have to do anything.
 
 // Uncomment the following BLOCK to expose PS.enter() event handler:
 
-/*
+
 
 PS.enter = function( x, y, data, options ) {
-	// Uncomment the following code line to inspect x/y parameters:
+    State.path = [];
+    State.current = State.WANDER;
+
+    // Uncomment the following code line to inspect x/y parameters:
 
 	// PS.debug( "PS.enter() @ " + x + ", " + y + "\n" );
 
 	// Add code here for when the mouse cursor/touch enters a bead.
 };
 
-*/
+
 
 /*
 PS.exit ( x, y, data, options )
@@ -213,17 +257,18 @@ It doesn't have to do anything.
 
 // Uncomment the following BLOCK to expose PS.exitGrid() event handler:
 
-/*
+
 
 PS.exitGrid = function( options ) {
 	// Uncomment the following code line to verify operation:
-
+    State.path = [];
+    State.current = State.OFF;
 	// PS.debug( "PS.exitGrid() called\n" );
 
 	// Add code here for when the mouse cursor/touch moves off the grid.
 };
 
-*/
+
 
 /*
 PS.keyDown ( key, shift, ctrl, options )
