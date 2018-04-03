@@ -19,28 +19,38 @@ Called once after engine is initialized but before event-polling begins.
 
 var tarR, tarG, tarB, tarHex;
 
+var paintbrush;
+
 function fill(x, y, r, g, b) {
     if (x == 0 && y == 0) {
-        PS.applyRect(0, 0, 1, 1, function (i, j) {
+        PS.applyRect(2, 0, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
+            PS.border(i, j, 0);
         });
     }
 
     if (x == 1 && y == 0) {
-        PS.applyRect(2, 0, 3, 1, function (i, j) {
+        PS.applyRect(4, 0, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
+            PS.border(i, j, 0);
+
         });
     }
 
     if (x == 0 && y == 1) {
-        PS.applyRect(0, 2, 1, 3, function (i, j) {
+        PS.applyRect(2, 2, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
+            PS.border(i, j, 0);
+
+
         });
     }
 
     if (x == 1 && y == 1) {
-        PS.applyRect(2, 2, 3, 3, function (i, j) {
+        PS.applyRect(4, 2, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
+            PS.border(i, j, 0);
+
         });
     }
 }
@@ -52,28 +62,37 @@ PS.init = function (system, options) {
     //set grid to 9 by 9
     PS.gridSize(8, 8);
 
-    tarR = PS.random(256) - 1; // random red 0-255
-    tarG = PS.random(256) - 1; // random green
-    tarB = PS.random(256) - 1; // random blue
+    PS.gridColor(PS.COLOR_BLACK);
 
-    tarHex = "0x" + ((1 << 24) + (tarR << 16) + (tarG << 8) + tarB).toString(16).slice(1) + " ";
+    PS.applyRect(0, 0, 8, 8, function(i, j) {
+        // PS.border(i, j, 0);
+        PS.color(i, j, 0x000000);
+    });
+
+    paintbrush = 0x000000;
+
+    // tarR = PS.random(256) - 1; // random red 0-255
+    // tarG = PS.random(256) - 1; // random green
+    // tarB = PS.random(256) - 1; // random blue
+    //
+    // tarHex = "0x" + ((1 << 24) + (tarR << 16) + (tarG << 8) + tarB).toString(16).slice(1) + " ";
 
 
-    PS.statusText("Target: " + tarHex);
+    // PS.statusText("Target: " + tarHex);
 
     //randomize bead colors for entire grid
     while (y < 2) {
         while (x < 2) {
-            r = PS.random(256) - 1; // random red 0-255
-            g = PS.random(256) - 1; // random green
-            b = PS.random(256) - 1; // random blue
+            r = (PS.random(3) + 1) * 85; // random red 0-255
+            g = (PS.random(3) + 1) * 85; // random green
+            b = (PS.random(3) + 1) * 85; // random blue
 
             //if bead is randomly set to the target hex, reset
-            while (tarR === r && tarG === g && tarB === b) {
-                r = PS.random(256) - 1; // random red 0-255
-                g = PS.random(256) - 1; // random green
-                b = PS.random(256) - 1; // random blue
-            }
+            // while (tarR === r && tarG === g && tarB === b) {
+            //     r = PS.random(256) - 1; // random red 0-255
+            //     g = PS.random(256) - 1; // random green
+            //     b = PS.random(256) - 1; // random blue
+            // }
 
             fill(x, y, r, g, b); // set bead color
 
@@ -82,6 +101,13 @@ PS.init = function (system, options) {
         y = y + 1; //increment
         x = 0; //reset
     }
+
+    PS.statusColor(0xFFFFFF);
+
+    PS.color(2, 6, 0xFF0000);
+    PS.color(3, 6, 0x00FF00);
+    PS.color(4, 6, 0x0000FF);
+    PS.color(5, 6, 0xFFFFFF);
 };
 
 /*
@@ -139,17 +165,73 @@ PS.touch = function (x, y, data, options) {
     //    changeXL=changeXL-1;
     // }
 
-    for (var i = 0; i < 81; i++) {
-        var coords = spiral(i);
-        var x1 = x + coords[0];
-        var y1 = y + coords[1];
-        console.log(i + ":" + coords + "\t" + (x1 >= 0 && x1 < 9 && y1 >= 0 && y1 < 9));
-        if (x1 >= 0 && x1 < 9 && y1 >= 0 && y1 < 9) {
-            var currentColor = PS.unmakeRGB(PS.color(x1, y1), {});
-            PS.color(x1, y1, 0x0000FF);
-            console.log("AAHH:" + coords);
+    if(y == 6) {
+        switch(x) {
+            case 2:
+                paintbrush = 0x220000;
+                break;
+            case 3:
+                paintbrush = 0x002200;
+
+                break;
+            case 4:
+                paintbrush = 0x000022;
+
+                break;
+            case 5:
+                paintbrush = 0x222222;
+
+                break;
         }
+        PS.statusText("Brush:" + PS.hex(paintbrush));
+
     }
+
+    PS.applyRect(2, 0, 4, 4, function(i, j) {
+        // PS.debug(i + "," + j+ "\n");
+        var c = PS.unmakeRGB(PS.color(x, y), {});
+        var prgb = PS.unmakeRGB(paintbrush, {});
+        var col = c;
+        col.r = (c.r + prgb.r) > 255 ? 0 : (c.r + prgb.r);// % 255;
+        col.g = (c.g + prgb.g) > 255 ? 0 : (c.g + prgb.g);// % 255;
+        col.b = (c.b + prgb.b) > 255 ? 0 : (c.b + prgb.b);// % 255;
+
+       if(x == i && y == j) {
+           if(j == 0 ||  j==1) {
+               switch(i) {
+                   case 2:
+                   case 3:
+                       fill(0, 0, col.r, col.g, col.b);
+                       break;
+                   case 4:
+                   case 5:
+                       fill(1, 0, col.r, col.g, col.b);
+                       break;
+                   default:
+                       break;
+               }
+           } else if(j == 2 ||  j==3) {
+               switch(i) {
+                   case 2:
+                   case 3:
+                       fill(0, 1, col.r, col.g, col.b);
+                       break;
+                   case 4:
+                   case 5:
+                       fill(1, 1, col.r, col.g, col.b);
+                       break;
+                   default:
+                       break;
+               }
+           }
+       }
+    });
+
+
+    if( (PS.color(2, 0) + PS.color(4, 0) + PS.color(2, 2) + PS.color(4, 2)) / PS.color(4, 2) === 4) {
+        alert("Win!");
+    }
+
 };
 
 
@@ -172,10 +254,10 @@ PS.enter = function (x, y, data, options) {
     components = PS.unmakeRGB(PS.color(x, y), {});
 
     //convert RGB values to hex
-    color = "0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
+    color = PS.hex(PS.color(x, y));//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
 
     //print target hex and current bead's hex
-    PS.statusText("Target hex: " + tarHex + "Current: " + color);
+    PS.statusText("Brush:" + PS.hex(paintbrush) + (PS.color(x, y) > 0 ? ("\tCurrent: " + color) : ""));
 };
 
 
