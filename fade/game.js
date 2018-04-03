@@ -65,7 +65,7 @@ PS.init = function (system, options) {
     PS.gridColor(PS.COLOR_BLACK);
 
     PS.applyRect(0, 0, 8, 8, function(i, j) {
-        // PS.border(i, j, 0);
+        PS.border(i, j, 0);
         PS.color(i, j, 0x000000);
     });
 
@@ -227,9 +227,16 @@ PS.touch = function (x, y, data, options) {
        }
     });
 
+    var color = PS.hex(PS.color(x, y));//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
+
+    //print target hex and current bead's hex
+    PS.statusText("Brush:" + PS.hex(paintbrush) + (PS.color(x, y) > 0 ? ("\tCurrent: " + color) : ""));
 
     if( (PS.color(2, 0) + PS.color(4, 0) + PS.color(2, 2) + PS.color(4, 2)) / PS.color(4, 2) === 4) {
-        alert("Win!");
+        setTimeout(function() {
+            alert("Win!");
+            PS.init();
+        }, 100);
     }
 
 };
