@@ -209,7 +209,15 @@ PS.touch = function (x, y, data, options) {
         col.b = (c.b + prgb.b) > 255 ? 0 : (c.b + prgb.b);// % 255;
 
        if(x == i && y == j) {
-           PS.audioPlay("fx_drip2");
+           if(paintbrush !==0) {
+                PS.audioPlay("fx_drip2");
+           } else {
+               setTimeout(function() {
+                   PS.statusText("Try selecting a brush first!");
+               },100);
+               PS.audioPlay("fx_uhoh");
+               return;
+           }
 
            if(j == 0 ||  j==1) {
                switch(i) {
