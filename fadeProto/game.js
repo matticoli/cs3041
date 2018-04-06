@@ -26,7 +26,6 @@ function fill(x, y, r, g, b) {
         PS.applyRect(2, 0, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
             PS.border(i, j, 0);
-            PS.visible(i, j, true);
         });
     }
 
@@ -34,7 +33,7 @@ function fill(x, y, r, g, b) {
         PS.applyRect(4, 0, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
             PS.border(i, j, 0);
-            PS.visible(i, j, true);
+
         });
     }
 
@@ -42,7 +41,8 @@ function fill(x, y, r, g, b) {
         PS.applyRect(2, 2, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
             PS.border(i, j, 0);
-            PS.visible(i, j, true);
+
+
         });
     }
 
@@ -50,7 +50,7 @@ function fill(x, y, r, g, b) {
         PS.applyRect(4, 2, 2, 2, function (i, j) {
             PS.color(i, j, r, g, b);
             PS.border(i, j, 0);
-            PS.visible(i, j, true);
+
         });
     }
 }
@@ -67,20 +67,25 @@ PS.init = function (system, options) {
     PS.applyRect(0, 0, 8, 8, function(i, j) {
         PS.border(i, j, 0);
         PS.color(i, j, 0x000000);
-        PS.visible(i, j, false);
-
     });
 
     paintbrush = 0x000000;
 
-    //TODO BGM
+    // tarR = PS.random(256) - 1; // random red 0-255
+    // tarG = PS.random(256) - 1; // random green
+    // tarB = PS.random(256) - 1; // random blue
+    //
+    // tarHex = "0x" + ((1 << 24) + (tarR << 16) + (tarG << 8) + tarB).toString(16).slice(1) + " ";
 
-    //randomize square colors for play area
+
+    // PS.statusText("Target: " + tarHex);
+
+    //randomize bead colors for entire grid
     while (y < 2) {
         while (x < 2) {
-            g = (PS.random(5)) * 51; // random green
-            r = (PS.random(5)) * 51; // random red
-            b = (PS.random(5)) * 51; // random blue
+            r = (PS.random(3) + 1) * 85; // random red 0-255
+            g = (PS.random(3) + 1) * 85; // random green
+            b = (PS.random(3) + 1) * 85; // random blue
 
             //if bead is randomly set to the target hex, reset
             // while (tarR === r && tarG === g && tarB === b) {
@@ -90,8 +95,7 @@ PS.init = function (system, options) {
             // }
 
             fill(x, y, r, g, b); // set bead color
-            // PS.fade(x, y, 60);
-6
+
             x = x + 1; //increment
         }
         y = y + 1; //increment
@@ -104,11 +108,6 @@ PS.init = function (system, options) {
     PS.color(3, 6, 0x00FF00);
     PS.color(4, 6, 0x0000FF);
     PS.color(5, 6, 0xFFFFFF);
-    PS.visible(2, 6, true);
-    PS.visible(3, 6, true);
-    PS.visible(4, 6, true);
-    PS.visible(5, 6, true);
-
 };
 
 /*
@@ -167,27 +166,25 @@ PS.touch = function (x, y, data, options) {
     // }
 
     if(y == 6) {
-        //TODO BRUSH SELECT SOUND
         switch(x) {
             case 2:
-                paintbrush = 0x330000;
+                paintbrush = 0x220000;
                 break;
             case 3:
-                paintbrush = 0x003300;
+                paintbrush = 0x002200;
 
                 break;
             case 4:
-                paintbrush = 0x000033;
+                paintbrush = 0x000022;
 
                 break;
             case 5:
-                paintbrush = 0x333333;
+                paintbrush = 0x222222;
 
                 break;
         }
-        PS.statusText("Brush:" + PS.hex(paintbrush, 6));
-        PS.fade(x, y, 20, {rgb: PS.COLOR_BLACK});
-        PS.color(x, y, PS.color(x, y));
+        PS.statusText("Brush:" + PS.hex(paintbrush));
+
     }
 
     PS.applyRect(2, 0, 4, 4, function(i, j) {
@@ -201,7 +198,6 @@ PS.touch = function (x, y, data, options) {
 
        if(x == i && y == j) {
            if(j == 0 ||  j==1) {
-               // TODO PAINT SOUND
                switch(i) {
                    case 2:
                    case 3:
@@ -231,22 +227,15 @@ PS.touch = function (x, y, data, options) {
        }
     });
 
-    var color = PS.hex(PS.color(x, y), 6);//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
+    var color = PS.hex(PS.color(x, y));//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
 
     //print target hex and current bead's hex
-    PS.statusText("Brush:" + PS.hex(paintbrush, 6) + "\t\tHover: " + color);
+    PS.statusText("Brush:" + PS.hex(paintbrush) + (PS.color(x, y) > 0 ? ("\tCurrent: " + color) : ""));
 
-    var colorSum = (PS.color(2, 0) + PS.color(4, 0) + PS.color(2, 2) + PS.color(4, 2));
-
-    if((colorSum === 0) || (colorSum / PS.color(4, 2) === 4)) {
+    if( (PS.color(2, 0) + PS.color(4, 0) + PS.color(2, 2) + PS.color(4, 2)) / PS.color(4, 2) === 4) {
         setTimeout(function() {
-            PS.gridFade(60, {onEnd: function() {
-                setTimeout(function() {
-                    // TODO WIN SOUND
-                    PS.init();
-                }, 800);
-            }});
-            PS.gridColor(PS.color(2, 0));
+            alert("Win!");
+            PS.init();
         }, 100);
     }
 
@@ -271,16 +260,11 @@ PS.enter = function (x, y, data, options) {
     //find RGB values of current bead
     components = PS.unmakeRGB(PS.color(x, y), {});
 
-    if(y >= 6) {
-        // Don't show hover for  brushes
-        return;
-    }
-
     //convert RGB values to hex
-    color = PS.hex(PS.color(x, y), 6);//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
+    color = PS.hex(PS.color(x, y));//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
 
     //print target hex and current bead's hex
-    PS.statusText("Brush:" + PS.hex(paintbrush, 6) + ((x > 1 && x < 6 && y < 4) ? ("\t\tHover: " + color) : ""));
+    PS.statusText("Brush:" + PS.hex(paintbrush) + (PS.color(x, y) > 0 ? ("\tCurrent: " + color) : ""));
 };
 
 
