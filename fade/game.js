@@ -75,6 +75,7 @@ PS.init = function (system, options) {
 
     //TODO BGM
 
+
     //randomize square colors for play area
     while (y < 2) {
         while (x < 2) {
@@ -108,6 +109,14 @@ PS.init = function (system, options) {
     PS.visible(3, 6, true);
     PS.visible(4, 6, true);
     PS.visible(5, 6, true);
+
+    PS.glyph(7, 7, "?");
+    PS.glyphColor(7, 7, PS.COLOR_WHITE);
+    PS.radius(7, 7, 50);
+    PS.border(7, 7, 3);
+    PS.fade(7, 7, 30);
+    PS.borderColor(7, 7, PS.COLOR_WHITE);
+    PS.visible(7, 7, true);
 
 };
 
@@ -167,7 +176,7 @@ PS.touch = function (x, y, data, options) {
     // }
 
     if(y == 6) {
-        //TODO BRUSH SELECT SOUND
+        PS.audioPlay("fx_rip");
         switch(x) {
             case 2:
                 paintbrush = 0x330000;
@@ -200,8 +209,9 @@ PS.touch = function (x, y, data, options) {
         col.b = (c.b + prgb.b) > 255 ? 0 : (c.b + prgb.b);// % 255;
 
        if(x == i && y == j) {
+           PS.audioPlay("fx_drip2");
+
            if(j == 0 ||  j==1) {
-               // TODO PAINT SOUND
                switch(i) {
                    case 2:
                    case 3:
@@ -233,22 +243,39 @@ PS.touch = function (x, y, data, options) {
 
     var color = PS.hex(PS.color(x, y), 6);//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
 
-    //print target hex and current bead's hex
-    PS.statusText("Brush:" + PS.hex(paintbrush, 6) + "\t\tHover: " + color);
-
     var colorSum = (PS.color(2, 0) + PS.color(4, 0) + PS.color(2, 2) + PS.color(4, 2));
 
-    if((colorSum === 0) || (colorSum / PS.color(4, 2) === 4)) {
+    if((colorSum / PS.color(4, 2) === 4)) {
         setTimeout(function() {
+            PS.audioPlay("fx_coin7");
+            PS.audioPlay("fx_coin7");
             PS.gridFade(60, {onEnd: function() {
-                setTimeout(function() {
-                    // TODO WIN SOUND
-                    PS.init();
-                }, 800);
-            }});
+                    setTimeout(function() {
+                        PS.init();
+                    }, 800);
+                }});
             PS.gridColor(PS.color(2, 0));
         }, 100);
+    } else if((colorSum === 0)) {
+        PS.audioPlay("fx_coin7");
+        PS.audioPlay("fx_coin7");
+        setTimeout(function() {
+            PS.init();
+        }, 900);
     }
+
+    if(x == 7 && y == 7) {
+        PS.statusText("Note what each brush does to the hex value!");
+        PS.audioPlay("fx_bucket");
+        PS.color(7, 7, 0x555555);
+    }
+
+    if(y >= 6) {
+        // Don't show status text for  brushes
+        return;
+    }
+    //print target hex and current bead's hex
+    PS.statusText("Brush:" + PS.hex(paintbrush, 6) + "\t\tHover: " + color);
 
 };
 
@@ -294,15 +321,20 @@ It doesn't have to do anything.
 [options] = an object with optional parameters; see API documentation for details.
 */
 
-/*
+
 PS.exit = function( x, y, data, options ) {
+    if(x == 7 && y == 7) {
+        PS.statusText("Brush:" + PS.hex(paintbrush, 6));
+        PS.color(7, 7, 0x0);
+        return;
+    }
     // Uncomment the following code line to inspect x/y parameters:
     //PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
 
     // Add code here for when the mouse cursor/touch exits a bead.
 
 };
-*/
+
 
 
 /*

@@ -91,13 +91,13 @@ a {
 .box[data-button="game4"] {
     top: 60%;
     left: 10%;
-    background-image: url('../fade/cover.png');
+    background-image: url('../fadeProto/cover.png');
 }
 
 .box[data-button="game5"] {
     left: 40%;
     top: 60%;
-    background-image: url('../cover-default.png');
+    background-image: url('../fade/cover.png');
 }
 
 .box[data-button="game6"] {
