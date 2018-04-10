@@ -110,6 +110,15 @@ PS.init = function (system, options) {
     PS.visible(4, 6, true);
     PS.visible(5, 6, true);
 
+    //Instructions button
+    PS.glyph(0, 7, "i");
+    PS.glyphColor(0, 7, PS.COLOR_WHITE);
+    PS.radius(0, 7, 50);
+    PS.border(0, 7, 3);
+    PS.fade(0, 7, 30);
+    PS.borderColor(0, 7, PS.COLOR_WHITE);
+    PS.visible(0, 7, true);
+    //Help button
     PS.glyph(7, 7, "?");
     PS.glyphColor(7, 7, PS.COLOR_WHITE);
     PS.radius(7, 7, 50);
@@ -272,12 +281,15 @@ PS.touch = function (x, y, data, options) {
         }, 900);
     }
 
-    if(x == 7 && y == 7) {
+    if(x == 0 && y == 7) {
+        PS.statusText("Make all 4 tiles the same — Hover to see hex");
+        PS.audioPlay("fx_bucket");
+        PS.color(0, 7, 0x555555);
+    }else if(x == 7 && y == 7) {
         PS.statusText("Note what each brush does to the hex value!");
         PS.audioPlay("fx_bucket");
         PS.color(7, 7, 0x555555);
     }
-
     if(y >= 6) {
         // Don't show status text for  brushes
         return;
@@ -306,10 +318,24 @@ PS.enter = function (x, y, data, options) {
     //find RGB values of current bead
     components = PS.unmakeRGB(PS.color(x, y), {});
 
+    if(x == 0 && y == 7) {
+        PS.statusText("Click for Instructions");
+        PS.color(0, 7, 0x333333);
+    }else if(x == 7 && y == 7) {
+        PS.statusText("Click for Hint");
+        PS.color(7, 7, 0x333333);
+    }
+
+    if(y == 6 && x > 1 && x < 6) {
+        PS.statusText("Select brush — All brushes are additive!");
+    }
+
+
     if(y >= 6) {
         // Don't show hover for  brushes
         return;
     }
+
 
     //convert RGB values to hex
     color = PS.hex(PS.color(x, y), 6);//"0x" + ((1 << 24) + (components.r << 16) + (components.g << 8) + components.b).toString(16).slice(1) + "\n";
@@ -331,10 +357,16 @@ It doesn't have to do anything.
 
 
 PS.exit = function( x, y, data, options ) {
-    if(x == 7 && y == 7) {
+    if(x == 0 && y == 7) {
+        PS.statusText("Brush:" + PS.hex(paintbrush, 6));
+        PS.color(0, 7, 0x0);
+        return;
+    } else if(x == 7 && y == 7) {
         PS.statusText("Brush:" + PS.hex(paintbrush, 6));
         PS.color(7, 7, 0x0);
         return;
+    } else if (y == 6 && x > 1 && x < 6) {
+        PS.statusText("Brush:" + PS.hex(paintbrush, 6));
     }
     // Uncomment the following code line to inspect x/y parameters:
     //PS.debug( "PS.exit() @ " + x + ", " + y + "\n" );
