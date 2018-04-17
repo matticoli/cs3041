@@ -10,7 +10,8 @@
 
 // Global M for game props
 var M = {
-    DEBUG: true
+    DEBUG: false,
+    currentLevel: 0,
 };
 
 M.levels = [`
@@ -31,6 +32,90 @@ M.levels = [`
        ww       
        ww  g    
 `,`
+   g   ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+    t  ww  t    
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+`,`
+       ww       
+       ww       
+       ww       
+       ww       
+tttttttwwttttttt
+       ww       
+       ww       
+   g   ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+`,`
+       ww       
+   g   ww       
+       ww       
+       ww       
+tttttttwwttttttt
+       ww       
+       ww       
+tttttttww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+       ww       
+`,`
+       ww       
+       ww       
+       ww       
+    t  ww  t    
+wwwwwwwww       
+       ww       
+       ww       
+   g   ww       
+       ww       
+       ww       
+w wwwwwww       
+       ww       
+    t  ww  t    
+       ww       
+       ww       
+       ww       
+`,`
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
 `];
 
 M.level = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
@@ -68,7 +153,7 @@ M.target = {x: 14, y: 1};
 M.movePlayer = function(x, y, p) {
     if(!p) {
         p = M.player;
-        M.movePlayer(x, y, M.target);
+        M.movePlayer(-x, y, M.target);
     }
 
     var nx = (p.x + x) > 15 ? 15 : (p.x + x) < 0 ? 0 : p.x + x;
@@ -77,9 +162,14 @@ M.movePlayer = function(x, y, p) {
     if(!(PS.color(nx, ny) === Terrain.WALL.color)) {
         p.x = nx;
         p.y = ny;
+        if(p === M.target && PS.color(nx, ny) === Terrain.GOAL.color) {
+            M.loadLevel(++M.currentLevel);
+        } else if (PS.color(nx, ny) === Terrain.TELEPORT.color) {
+            p.x = 15 - p.x;
+        }
     }
 
-}
+};
 
 M.loadLevel = function(lvl) {
     var x = 0, y = 0;
@@ -95,14 +185,12 @@ M.loadLevel = function(lvl) {
                 }
             });
             x++;
-        } else if(y === 15) {
-            return;
-        } else if (x !== 0) {
+        } else if (y !== 15 && x !== 0) {
             y++;
             x = 0;
         }
     });
-}
+};
 
 M.pos = function(x, y) {
     return {x: x, y: y};
