@@ -59,7 +59,7 @@ M.levels = [`
 tttttttwwttttttt
        ww       
        ww       
-   g   ww   G   
+   g   ww   G
        ww       
        ww       
        ww       
@@ -100,6 +100,23 @@ w wwwwwww
        ww       
     t  ww  t    
        ww       
+       ww       
+       ww       
+`,`
+       ww       
+  g    ww       
+       ww        
+wwwwtwwww       
+    t  wwwwtwwww
+       ww       
+       ww       
+      www       
+       ww       
+       ww       
+wwwwwwwwwwwwwwtw
+       ww     G 
+    t  ww  t    
+ g     ww       
        ww       
        ww       
 `,`
