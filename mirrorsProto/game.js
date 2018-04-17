@@ -210,7 +210,7 @@ M.loadLevel = function(lvl) {
                 if(c === Terrain[terr]["id"]) {
                     // PS.debug("Matched "+x+","+y);
                     M.level[x][y] = Terrain[terr]["color"];
-                    PS.color(x, y, Terrain[terr]["color"]);
+                    // PS.color(x, y, Terrain[terr]["color"]);
                 }
             });
             x++;
@@ -247,15 +247,17 @@ PS.init = function( system, options ) {
     M.loadLevel(0);
 
     PS.timerStart(5, function() {
+        // Redraw map
         for(var x = 0; x < 16; x++) {
             for(var y = 0; y < 16; y++) {
-                // PS.borderFade(x, y, 0);
+                PS.fade(x, y, 0);
                 PS.color(x, y, M.level[x][y]);
                 PS.borderColor(x, y, M.level[x][y]);
                 PS.border(x, y, 0);
                 // PS.radius(x, y, 0);
             }
         }
+        // Redraw player and target
         // PS.borderFade(M.player.x, M.player.y, 40);
         PS.color(M.player.x, M.player.y, 0x333333);
         PS.color(M.target.x, M.target.y, 0x777777);
