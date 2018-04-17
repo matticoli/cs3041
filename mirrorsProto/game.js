@@ -234,6 +234,17 @@ M.loadLevel = function(lvl) {
     });
 };
 
+M.drawLevel = function() {
+    for(var x = 0; x < 16; x++) {
+        for(var y = 0; y < 16; y++) {
+            PS.fade(x, y, 0);
+            PS.color(x, y, M.level[x][y]);
+            PS.borderColor(x, y, M.level[x][y]);
+            PS.border(x, y, 0);
+        }
+    }
+};
+
 M.pos = function(x, y) {
     return {x: x, y: y};
 };
@@ -244,42 +255,14 @@ Called once after engine is initialized but before event-polling begins.
 [system] = an object containing engine and platform information; see API documentation for details.
 [options] = an object with optional parameters; see API documentation for details.
 */
-
-PS.init = function( system, options ) {
-    if(M.DEBUG) {
-        PS.debug("Debug mode on. Disable for production.");
-    } else {
-        PS.debug = function(){};
-    }
-
-    PS.statusText("Mirrors");
+var finalize = function( system, options ) {
     PS.statusColor(0xFFFFFF);
-	PS.gridSize(16, 16);
-    PS.gridColor(0x000000);
-
-    M.loadLevel(0);
-
-    if ( db ) {
-        db = PS.dbInit( db, { login : finalize } );
-        if ( db === PS.ERROR ) {
-            db = null;
-        }
-    }
-    else {
-        finalize();
-    }
+    PS.statusText("Mirrors");
 
     PS.timerStart(5, function() {
         // Redraw map
-        for(var x = 0; x < 16; x++) {
-            for(var y = 0; y < 16; y++) {
-                PS.fade(x, y, 0);
-                PS.color(x, y, M.level[x][y]);
-                PS.borderColor(x, y, M.level[x][y]);
-                PS.border(x, y, 0);
-                // PS.radius(x, y, 0);
-            }
-        }
+        M.drawLevel();
+
         // Redraw player and target
         // PS.borderFade(M.player.x, M.player.y, 40);
         PS.color(M.player.x, M.player.y, 0x333333);
@@ -289,6 +272,29 @@ PS.init = function( system, options ) {
     });
 };
 
+PS.init = function(system, option) {
+    if(M.DEBUG) {
+        PS.debug("Debug mode on. Disable for production.");
+    } else {
+        PS.debug = function(){};
+    }
+
+    PS.gridSize(16, 16);
+    PS.gridColor(0x000000);
+
+    M.loadLevel(0);
+    M.drawLevel();
+
+    if ( db ) {
+        db = PS.dbInit( db, { login : finalize } );
+        if ( db === PS.ERROR ) {
+            db = null;
+        }
+    }
+    else {
+        finalize(system, options);
+    }
+}
 
 /*
 PS.touch ( x, y, data, options )
