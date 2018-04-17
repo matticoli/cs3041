@@ -29,9 +29,10 @@ M.levels = [`
        ww       
        ww       
        ww       
-       ww  g    
+       ww       
+    G  ww  g    
 `,`
-   g   ww       
+    g  ww  G    
        ww       
        ww       
        ww       
@@ -55,7 +56,7 @@ M.levels = [`
 tttttttwwttttttt
        ww       
        ww       
-   g   ww       
+   g   ww   G   
        ww       
        ww       
        ww       
@@ -66,7 +67,7 @@ tttttttwwttttttt
        ww       
 `,`
        ww       
-   g   ww       
+  g G  ww       
        ww       
        ww       
 tttttttwwttttttt
@@ -90,7 +91,7 @@ wwwwwwwww
        ww       
        ww       
    g   ww       
-       ww       
+   G   ww       
        ww       
 w wwwwwww       
        ww       
@@ -136,9 +137,13 @@ var Terrain = {
         id: 't',
         color: 0x0000FF,
     },
-    GOAL: {
+    TGOAL: {
         id: 'g',
         color: 0x00FF00,
+    },
+    PGOAL: {
+        id: 'G',
+        color: 0x00AA00,
     },
     WALL: {
         id: 'w',
@@ -148,6 +153,8 @@ var Terrain = {
 
 M.player = {x: 1, y: 1};
 M.target = {x: 14, y: 1};
+M.pdone = false;
+M.tdone = false;
 
 M.movePlayer = function(x, y, p) {
     if(!p) {
@@ -163,11 +170,28 @@ M.movePlayer = function(x, y, p) {
         // Actually move
         p.x = nx;
         p.y = ny;
-        // If goal, next level
-        if(p === M.target && PS.color(nx, ny) === Terrain.GOAL.color) {
+        // Check if player and target are at their goals
+        if(p === M.target) {
+            if (PS.color(nx, ny) === Terrain.TGOAL.color) {//TODO FIx this use bitmap
+                M.tdone = true;
+            } else {
+                M.tdone = false;
+            }
+        } else if(p === M.player) {
+            if (PS.color(nx, ny) === Terrain.PGOAL.color) {//TODO FIx this use bitmap
+                M.pdone = true;
+            } else {
+                M.pdone = false;
+            }
+        }
+
+        // If both are at goal, move to next lvl
+        if(M.tdone && M.pdone) {
+            PS.audioPlay("fx_coin2");
             M.loadLevel(++M.currentLevel);
-        //
-        } else if (PS.color(nx, ny) === Terrain.TELEPORT.color) {
+        }
+
+        if (PS.color(nx, ny) === Terrain.TELEPORT.color) {
             PS.fade(nx, ny, 40);
             PS.audioPlay("fx_swoosh");
             p.x = 15 - p.x;
