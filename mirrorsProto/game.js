@@ -8,6 +8,9 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
+//global database variable
+var db="Mirror";
+
 // Global M for game props
 var M = {
     DEBUG: false,
@@ -188,6 +191,16 @@ M.movePlayer = function(x, y, p) {
         // If both are at goal, move to next lvl
         if(M.tdone && M.pdone) {
             PS.audioPlay("fx_coin2");
+
+            if ( db && PS.dbValid( db ) ) {
+                PS.dbEvent( db, "Level complete", M.currentLevel ); // val can be anything
+            }
+
+            if ( !M.levels[M.currentLevel + 1] && db && PS.dbValid( db ) ) {
+                PS.dbEvent( db, "gameover", true );
+                PS.dbSend( db, "bmoriarty", { discard : true } );
+                db = null;
+            }
             M.loadLevel(++M.currentLevel);
         }
 
@@ -245,6 +258,16 @@ PS.init = function( system, options ) {
     PS.gridColor(0x000000);
 
     M.loadLevel(0);
+
+    if ( db ) {
+        db = PS.dbInit( db, { login : finalize } );
+        if ( db === PS.ERROR ) {
+            db = null;
+        }
+    }
+    else {
+        finalize();
+    }
 
     PS.timerStart(5, function() {
         // Redraw map
@@ -416,7 +439,10 @@ It doesn't have to do anything.
 NOTE: This event is only used for applications utilizing server communication.
 */
 PS.shutdown = function( options ) {
-
+    if ( db && PS.dbValid( db ) ) {
+        PS.dbEvent( db, "shutdown", true );
+        PS.dbSend( db, "bmoriarty", { discard : true } );
+    }
 };
 
 /*
