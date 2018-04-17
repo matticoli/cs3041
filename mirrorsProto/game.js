@@ -29,7 +29,6 @@ M.levels = [`
        ww       
        ww       
        ww       
-       ww       
        ww  g    
 `,`
    g   ww       
@@ -159,12 +158,18 @@ M.movePlayer = function(x, y, p) {
     var nx = (p.x + x) > 15 ? 15 : (p.x + x) < 0 ? 0 : p.x + x;
     var ny = (p.y + y) > 15 ? 15 : (p.y + y) < 0 ? 0 : p.y + y;
 
+    // Make sure there isn't a wall there
     if(!(PS.color(nx, ny) === Terrain.WALL.color)) {
+        // Actually move
         p.x = nx;
         p.y = ny;
+        // If goal, next level
         if(p === M.target && PS.color(nx, ny) === Terrain.GOAL.color) {
             M.loadLevel(++M.currentLevel);
+        //
         } else if (PS.color(nx, ny) === Terrain.TELEPORT.color) {
+            PS.fade(nx, ny, 40);
+            PS.audioPlay("fx_swoosh");
             p.x = 15 - p.x;
         }
     }
