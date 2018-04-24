@@ -1,5 +1,9 @@
 // game.js for Perlenspiel 3.2
 
+//still need to make sure that win condition always triggers when true. At the moment, it doesn't always register if
+// both blocks don't enter the goals simultaneously. Also, when teleporting the two blocks at the same time when they're stacked,
+// they seem to get out of alignment, which also needs to be fixed.
+
 // The "use strict" directive in the following line is important. Don't alter or remove it!
 "use strict";
 
@@ -60,7 +64,7 @@ M.levels = [`
 tttttttwwttttttt
        ww       
        ww       
-   g   ww   G
+   g   ww   G   
        ww       
        ww       
        ww       
@@ -104,22 +108,59 @@ w wwwwwww
        ww       
        ww       
 `,`
+
        ww       
   g    ww       
-       ww        
+       ww       
 wwwwtwwww       
     t  wwwwtwwww
        ww       
        ww       
-      www       
+   s  www       
+   S   ww       
+       ww       
+wwwwwwwww       
+w      wwwwwwwtw
+    t  ww     G 
+ g     ww  t    
        ww       
        ww       
-wwwwwwwwwwwwwwtw
-       ww     G 
-    t  ww  t    
- g     ww       
+`,`
+
        ww       
        ww       
+ t     ww     t 
+wwwww wwwwwwww w
+w www wwww www w
+wtwwwtwwwwtwwwtw
+wwwww wwwwwwww w
+w www wwww www w
+wtwwwtwwwwtwwwtw
+wwwww wwwwwwww w
+w www wwww www w
+wtwwwtwwwwtwwwtw
+www    wwwww  S 
+ s     ww       
+       ww       
+      Gwwg      
+`,`
+
+g     Gwwg     G
+    wwwwww wwwww
+ t  wtwwwwtwwwtw
+wwwww wwwwwwww w
+w www wwww www w
+wtwwwtwwwwtwwwtw
+wwwww wwwwwwww w
+w www wwww www w
+wtwwwtwwwwtwwwtw
+wwwww wwwwwwww w
+w www wwww www w
+wtwwwtwwwwtwwwtw
+www    wwwww    
+       ww       
+       ww       
+      Swws      
 `,`
 wwwwwwwwwwwwwwww
 wwwwwwwwwwwwwwww
@@ -160,11 +201,13 @@ var Terrain = {
     },
     TGOAL: {
         id: 'g',
-        color: 0x00FF00,
+        // color: 0x00FF00,
+        color: 0x7FFF00, //made goals easier to distinguish
     },
     PGOAL: {
         id: 'G',
-        color: 0x00AA00,
+        // color: 0x00AA00,
+        color: 0x006400, //made goals easier to distinguish
     },
     WALL: {
         id: 'w',
@@ -304,6 +347,8 @@ var finalize = function( system, options ) {
         // Redraw player and target
         // PS.borderFade(M.player.x, M.player.y, 40);
         PS.color(M.player.x, M.player.y, 0x333333);
+        //PS.color(M.player.x, M.player.y, 0xC71585);
+        //PS.color(M.target.x, M.target.y, 0xFFC0CB);
         PS.color(M.target.x, M.target.y, 0x777777);
         // PS.radius(M.player.x, M.player.y, 50);
 
