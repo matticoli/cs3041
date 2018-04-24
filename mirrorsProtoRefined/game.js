@@ -8,8 +8,9 @@
 /*jslint nomen: true, white: true */
 /*global PS */
 
-//global database variable
-var db="Mirror";
+//global database variable (Game name in production only)
+var db= window.location.href.indexOf("localhost") < 0 && window.location.href.indexOf("file") < 0
+    ? "Mirror" : false;
 
 // Global M for game props
 var M = {
@@ -50,7 +51,7 @@ M.levels = [`
        ww       
        ww       
        ww       
-       ww       
+    S  ww  s    
 `,`
        ww       
        ww       
@@ -169,6 +170,14 @@ var Terrain = {
         id: 'w',
         color: 0x000000,
     },
+    PSTART: {
+        id: 'S',
+        color: 0xBBBBBB,
+    },
+    TSTART: {
+        id: 's',
+        color: 0xBBBBBB,
+    },
 };
 
 M.player = {x: 1, y: 1};
@@ -176,10 +185,13 @@ M.target = {x: 14, y: 1};
 M.pdone = false;
 M.tdone = false;
 
-M.movePlayer = function(x, y, p) {
+M.movePlayer = function(x, y, p, skipMirror) {
     if(!p) {
+        // If no player obj specified, default to main player
         p = M.player;
-        M.movePlayer(-x, y, M.target);
+        if(!skipMirror) {
+            M.movePlayer(-x, y, M.target);
+        }
     }
 
     var nx = (p.x + x) > 15 ? 15 : (p.x + x) < 0 ? 0 : p.x + x;
@@ -243,6 +255,15 @@ M.loadLevel = function(lvl) {
                     // PS.color(x, y, Terrain[terr]["color"]);
                 }
             });
+
+            if(c === Terrain.PSTART.id) {
+                //Note: can't use movePlayer here bc it's relative
+                M.player.x = x;
+                M.player.y = y;
+            } else if(c === Terrain.TSTART.id) {
+                M.target.x = x;
+                M.target.y = y;
+            }
             x++;
         } else if (y !== 15 && x !== 0) {
             y++;
@@ -309,7 +330,7 @@ PS.init = function(system, option) {
         }
     }
     else {
-        finalize(system, options);
+        finalize(system, null);
     }
 }
 
