@@ -13,8 +13,11 @@
 /*global PS */
 
 //global database variable (Game name in production only)
-var db= window.location.href.indexOf("localhost") < 0 && window.location.href.indexOf("file") < 0
-    ? "Mirror" : false;
+// var db= window.location.href.indexOf("localhost") < 0 && window.location.href.indexOf("file") < 0
+//     ? "Mirror" : false;
+
+//for game testing purposes
+var db= "Mirror";
 
 // Global M for game props
 var M = {
@@ -40,22 +43,22 @@ M.levels = [`
        ww       
     G  ww  g    
 `,`
-    g  ww  G    
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-    t  ww  t    
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-    S  ww  s    
+wwwwgwwwwwwGwwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwwwtwwwwwwtwwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwww wwwwww wwww
+wwwwSwwwwwwswwww
 `,`
        ww       
        ww       
@@ -197,7 +200,7 @@ var Terrain = {
     },
     TELEPORT: {
         id: 't',
-        color: 0x0000FF,
+        color: 0x00FFFF,
     },
     TGOAL: {
         id: 'g',
@@ -356,6 +359,9 @@ var finalize = function( system, options ) {
 };
 
 PS.init = function(system, option) {
+    //change status text color
+    PS.statusColor(0x0800FD);
+
     if(M.DEBUG) {
         PS.debug("Debug mode on. Disable for production.");
     } else {
