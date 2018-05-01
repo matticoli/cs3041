@@ -16,7 +16,6 @@
 var db= window.location.href.indexOf("localhost") < 0 && window.location.href.indexOf("file") < 0
     ? "Mirror" : false;
 
-
 // Global M for game props
 var M = {
     DEBUG: false,
@@ -75,62 +74,62 @@ tttttttwwttttttt
        ww       
        ww       
 `,`
-       ww       
-  g G  ww       
-       ww       
-       ww       
+       ww      
+  g G  ww      
+       ww      
+       ww      
 tttttttwwttttttt
-       ww       
-       ww       
-tttttttww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
-       ww       
+       ww      
+       ww      
+tttttttww      
+       ww      
+       ww      
+       ww      
+       ww      
+       ww      
+       ww      
+       ww      
+       ww      
 `,`
-       ww       
-       ww       
-       ww       
-    t  ww  t    
-wwwwwwwww       
-       ww       
-       ww       
-   g   ww       
-   G   ww       
-       ww       
-w wwwwwww       
-       ww       
-    t  ww  t    
-       ww       
-       ww       
-       ww       
+       ww      
+       ww      
+       ww      
+    t  ww  t   
+wwwwwwwww      
+       ww      
+       ww      
+   g   ww      
+   G   ww      
+       ww      
+w wwwwwww      
+       ww      
+    t  ww  t   
+       ww      
+       ww      
+       ww      
 `,`
 
-       ww       
-  g    ww       
-       ww       
-wwwwtwwww       
+       ww
+  g    ww
+       ww
+wwwwtwwww
     t  wwwwtwwww
-       ww       
-       ww       
-   s  www       
-   S   ww       
-       ww       
-wwwwwwwww       
+       ww
+       ww
+   s  www
+   S   ww
+       ww
+wwwwwwwww
 w      wwwwwwwtw
-    t  ww     G 
- g     ww  t    
-       ww       
-       ww       
+    t  ww     G
+ g     ww  t
+       ww
+       ww
 `,`
 
-       ww       
-       ww       
- t     ww     t 
+       ww
+       ww
+ t     ww     t
 wwwww wwwwwwww w
 w www wwww www w
 wtwwwtwwwwtwwwtw
@@ -140,10 +139,10 @@ wtwwwtwwwwtwwwtw
 wwwww wwwwwwww w
 w www wwww www w
 wtwwwtwwwwtwwwtw
-www    wwwww  S 
- s     ww       
-       ww       
-      Gwwg      
+www    wwwww  S
+ s     ww
+       ww
+      Gwwg
 `,`
 
 g     Gwwg     G
@@ -158,10 +157,10 @@ wtwwwtwwwwtwwwtw
 wwwww wwwwwwww w
 w www wwww www w
 wtwwwtwwwwtwwwtw
-www    wwwww    
-       ww       
-       ww       
-      Swws      
+www    wwwww
+       ww
+       ww
+      Swws
 `,`
 wwwwwwwwwwwwwwww
 wwwwwwwwwwwwwwww
@@ -178,6 +177,23 @@ wwwwwwwwwwwwwwww
 wwwwwwwwwwwwwwww
 wwwwwwwwwwwwwwww
 wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+`,`
+wwwSwwwwwwwwswww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwcwwwwwwwwcwww
+wwwGwwwwwwwwgwww
 wwwwwwwwwwwwwwww
 `];
 
@@ -228,6 +244,7 @@ M.player = {x: 1, y: 1};
 M.target = {x: 14, y: 1};
 M.pdone = false;
 M.tdone = false;
+M.controlLock = false;
 
 M.movePlayer = function(x, y, p, skipMirror) {
     if(!p) {
@@ -261,6 +278,7 @@ M.movePlayer = function(x, y, p, skipMirror) {
             }
         }
 
+
         // If both are at goal, move to next lvl
         if(M.tdone && M.pdone) {
             PS.audioPlay("fx_coin2");
@@ -279,8 +297,15 @@ M.movePlayer = function(x, y, p, skipMirror) {
 
         if (PS.color(nx, ny) === Terrain.TELEPORT.color) {
             PS.fade(nx, ny, 40);
-            PS.audioPlay("fx_swoosh");
+            PS.audioPlay("fx_jump1");
             p.x = 15 - p.x;
+        }
+        if(PS.color(nx, ny) === Terrain.ICE.color) {
+            M.controlLock = true;
+            setTimeout(function () {
+                M.movePlayer(x, y, p, skipMirror);
+                PS.audioPlay("fx_squink");
+            }, 100);
         }
     }
 
@@ -352,7 +377,6 @@ var finalize = function( system, options ) {
         //PS.color(M.target.x, M.target.y, 0xFFC0CB);
         PS.color(M.target.x, M.target.y, 0x777777);
         // PS.radius(M.player.x, M.player.y, 50);
-
     });
 };
 
@@ -473,22 +497,28 @@ http://users.wpi.edu/~bmoriarty/ps/constants.html
 [options] = an object with optional parameters; see API documentation for details.
 */
 PS.keyDown = function( key, shift, ctrl, options ) {
+    if(M.controlLock) {
+        return;
+    }
+
     switch(key) {
         case PS.KEY_ARROW_LEFT:
             M.movePlayer(-1, 0);
+            // PS.audioPlay("fx_swoosh");
             break;
         case PS.KEY_ARROW_RIGHT:
             M.movePlayer(1, 0);
+            // PS.audioPlay("fx_swoosh");
             break;
         case PS.KEY_ARROW_UP:
             M.movePlayer(0, -1);
+            // PS.audioPlay("fx_swoosh");
             break;
         case PS.KEY_ARROW_DOWN:
             M.movePlayer(0, 1);
+            // PS.audioPlay("fx_swoosh");
             break;
     }
-
-
 };
 
 /*

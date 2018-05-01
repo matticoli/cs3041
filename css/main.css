@@ -121,12 +121,12 @@ a {
 .box[data-button="game8"] {
      left: 30%;
      top: 66%;
-     background-image: url('../cover-default.png');
+     background-image: url('../mirrorsProtoRefined2/cover.png');
  }
 
 .box[data-button="game9"] {
     width: 40%;
     left: 55%;
     top: 66%;
-    background-image: url('../cover-default.png');
+    background-image: url('../mirrors/cover.png');
 }
