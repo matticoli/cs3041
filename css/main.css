@@ -37,6 +37,7 @@ a {
     font-size: 3vh;
     height: 15%;
     width: 100vw;
+    line-height: 1vh;
 }
 
 .title h2 {
