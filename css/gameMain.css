@@ -44,6 +44,18 @@ a {
     padding-left: 12vh;
 }
 
+
+.manifesto {
+    position: fixed;
+    top: 15vh;
+    width: 100vw;
+    height: 85vh;
+}
+
+.manifesto h {
+    color: black;
+}
+
 .homebtn {
     position: fixed;
     height: 10vh;
